@@ -200,7 +200,7 @@ contract D223ICO {
     uint256 price_rate_BUSDT = 2500 * 1e12; // Target price $0.0004 per D223 token.
 
     address BUSDT_contract = 0xbf6c50889d3a620eb42C0F188b65aDe90De958c4;
-    address ICO_token;
+    address ICO_token      = 0xf5717D6c1cbAFE00A4c800B227eCe496180244F9;
 
 /*
     function tokenReceived(address _from, uint _value, bytes memory _data) public override returns (bytes4)
