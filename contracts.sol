@@ -202,19 +202,11 @@ contract D223ICO {
     address BUSDT_contract = 0xbf6c50889d3a620eb42C0F188b65aDe90De958c4;
     address ICO_token      = 0xf5717D6c1cbAFE00A4c800B227eCe496180244F9;
 
-/*
-    function tokenReceived(address _from, uint _value, bytes memory _data) public override returns (bytes4)
+    function tokenReceived(address _from, uint _value, bytes memory _data) public returns (bytes4)
     {
-        tkn.token_contract = msg.sender;
-        tkn.sender         = _from;
-        tkn.value          = _value;
-        tkn.data           = _data;
-        
-        // ACTUAL CODE
-
+        require(msg.sender == ICO_token);
         return 0x8943ec02;
     }
-*/
 
     function purchaseTokens(address _payment_token, uint256 _payment_amount) public
     {
