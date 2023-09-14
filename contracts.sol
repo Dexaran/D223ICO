@@ -205,7 +205,8 @@ contract D223ICO {
     function tokenReceived(address _from, uint _value, bytes memory _data) public returns (bytes4)
     {
         require(msg.sender == ICO_token);
-        return 0x8943ec02;
+        return this.tokenReceived.selector;
+        //return 0x8943ec02;
     }
 
     function purchaseTokens(address _payment_token, uint256 _payment_amount) public
@@ -234,6 +235,6 @@ contract D223ICO {
     function extractTokens(address _token, uint256 _amount) public
     {
         require(msg.sender == owner);
-        IERC20(ICO_token).transfer(msg.sender, _amount);
+        IERC20(_token).transfer(msg.sender, _amount);
     }
 }
