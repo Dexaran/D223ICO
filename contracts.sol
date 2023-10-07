@@ -195,7 +195,7 @@ contract D223Token {
  */
 contract D223ICO {
 
-    address public owner = msg.sender;
+    address public owner;// = msg.sender;
 
     uint256 public price_rate_BUSDT = 2500; // Target price $0.0004 per D223 token.
     uint256 public price_rate_ETH   = price_rate_BUSDT * 1800; // Target price $0.0004 per D223 token.
@@ -203,7 +203,7 @@ contract D223ICO {
     address public BUSDT_contract = 0xbf6c50889d3a620eb42C0F188b65aDe90De958c4;
     address public ICO_token      = 0xf5717D6c1cbAFE00A4c800B227eCe496180244F9;
 
-    function receive() public payable
+    receive() external payable
     {
         IERC20(ICO_token).transfer(msg.sender, msg.value * price_rate_BUSDT);
     }
