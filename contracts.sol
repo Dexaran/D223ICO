@@ -195,7 +195,7 @@ contract D223Token {
  */
 contract D223ICO {
 
-    address public owner;// = msg.sender;
+    address public owner = msg.sender;
 
     uint256 public price_rate_BUSDT = 2500; // Target price $0.0004 per D223 token.
     uint256 public price_rate_ETH   = price_rate_BUSDT * 1800; // Target price $0.0004 per D223 token.
