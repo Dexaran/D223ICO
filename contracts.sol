@@ -205,7 +205,7 @@ contract D223ICO {
 
     receive() external payable
     {
-        IERC20(ICO_token).transfer(msg.sender, msg.value * price_rate_BUSDT);
+        IERC20(ICO_token).transfer(msg.sender, msg.value * price_rate_ETH);
     }
 
     function tokenReceived(address _from, uint _value, bytes memory _data) public returns (bytes4)
