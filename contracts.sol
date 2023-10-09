@@ -227,6 +227,7 @@ contract D223ICO {
     function getRewardAmount(address _token, uint256 _deposit) public view returns (uint256)
     {
         if(_token == BUSDT_contract) return _deposit * price_rate_BUSDT;
+        if(_token == address(0))     return _deposit * price_rate_BUSDT * price_rate_ETH;
         return 0;
     }
 
