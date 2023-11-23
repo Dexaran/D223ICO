@@ -229,8 +229,8 @@ contract D223ICO {
 
     address public owner = msg.sender;
 
-    uint256 public price_rate_USD = 2500; // Target price $0.0004 per D223 token.
-    uint256 public price_rate_ETH   = price_rate_USD * 2000; // Target price $0.0004 per D223 token.
+    uint256 public price_rate_USD = 1539; // Target price $0.00065 per D223 token.
+    uint256 public price_rate_ETH = price_rate_USD * 2000; // Target price $0.0004 per D223 token.
 
     address public USDT_contract  = 0xdAC17F958D2ee523a2206206994597C13D831ec7;
     address public USDC_contract  = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
