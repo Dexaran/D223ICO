@@ -52,11 +52,13 @@ contract D223Token {
      * @dev Event that is fired on successful transfer.
      */
     event Transfer(address indexed from, address indexed to, uint value, bytes data);
+    event Approval(address indexed owner, address indexed spender, uint256 amount);
 
     string  private _name;
     string  private _symbol;
     uint8   private _decimals;
     uint256 private _totalSupply;
+    mapping(address account => mapping(address spender => uint256)) private allowances;
     
     mapping(address => uint256) private balances; // List of user balances.
 
@@ -72,8 +74,8 @@ contract D223Token {
      
     constructor()
     {
-        _name     = "D223 presale token";
-        _symbol   = "pD223";
+        _name     = "Dex223 token";
+        _symbol   = "D223";
         _decimals = 18;
         balances[msg.sender] = 80000000 * 1e18;
         _totalSupply = 80000000 * 1e18;
@@ -186,6 +188,36 @@ contract D223Token {
         emit Transfer(msg.sender, _to, _value, _empty);
         return true;
     }
+
+    // ERC-20 functions for backwards compatibility.
+
+    function allowance(address owner, address spender) public view virtual returns (uint256) {
+        return allowances[owner][spender];
+    }
+
+    function approve(address _spender, uint _value) public returns (bool) {
+
+        // Safety checks.
+        require(_spender != address(0), "ERC-223: Spender error.");
+
+        allowances[msg.sender][_spender] = _value;
+        emit Approval(msg.sender, _spender, _value);
+        
+        return true;
+    }
+
+    function transferFrom(address _from, address _to, uint _value) public returns (bool) {
+        
+        require(allowances[_from][msg.sender] >= _value, "ERC-223: Insufficient allowance.");
+        
+        balances[_from] -= _value;
+        allowances[_from][msg.sender] -= _value;
+        balances[_to] += _value;
+        
+        emit Transfer(_from, _to, _value, hex"00000000");
+        
+        return true;
+    }
 }
 
 /**
@@ -219,7 +251,7 @@ contract D223ICO {
     function purchaseTokens(address _payment_token, uint256 _payment_amount) public
     {
         require(_payment_token == USDT_contract || _payment_token == USDC_contract || _payment_token == DAI_contract, "Wrong token");
-        IERC20(_payment_token).transferFrom(msg.sender, address(this), _payment_amount);
+        safeTransferFrom(_payment_token, msg.sender, address(this), _payment_amount);
         IERC20(ICO_token).transfer(msg.sender, _payment_amount * price_rate_USD);
     }
 
@@ -251,5 +283,11 @@ contract D223ICO {
     {
         require(msg.sender == owner);
         IERC20(_token).transfer(msg.sender, _amount);
+    }
+    
+    function safeTransferFrom(address token, address from, address to, uint value) internal {
+        // bytes4(keccak256(bytes('transferFrom(address,address,uint256)')));
+        (bool success, bytes memory data) = token.call(abi.encodeWithSelector(0x23b872dd, from, to, value));
+        require(success && (data.length == 0 || abi.decode(data, (bool))), "Transfer failed");
     }
 }
