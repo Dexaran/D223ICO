@@ -77,8 +77,8 @@ contract D223Token {
         _name     = "Dex223 token";
         _symbol   = "D223";
         _decimals = 18;
-        balances[msg.sender] = 80000000 * 1e18;
-        _totalSupply = 80000000 * 1e18;
+        balances[msg.sender] = 8000000000 * 1e18;
+        _totalSupply = balances[msg.sender];
     }
 
     /**
