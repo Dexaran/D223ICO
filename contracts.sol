@@ -197,10 +197,12 @@ contract D223ICO {
 
     address public owner = msg.sender;
 
-    uint256 public price_rate_BUSDT = 2500; // Target price $0.0004 per D223 token.
-    uint256 public price_rate_ETH   = price_rate_BUSDT * 1800; // Target price $0.0004 per D223 token.
+    uint256 public price_rate_USD = 2500; // Target price $0.0004 per D223 token.
+    uint256 public price_rate_ETH   = price_rate_USD * 2000; // Target price $0.0004 per D223 token.
 
-    address public BUSDT_contract = 0xbf6c50889d3a620eb42C0F188b65aDe90De958c4;
+    address public USDT_contract  = 0xdAC17F958D2ee523a2206206994597C13D831ec7;
+    address public USDC_contract  = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
+    address public DAI_contract   = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
     address public ICO_token      = 0xf5717D6c1cbAFE00A4c800B227eCe496180244F9;
 
     receive() external payable
@@ -211,32 +213,37 @@ contract D223ICO {
     function tokenReceived(address _from, uint _value, bytes memory _data) public returns (bytes4)
     {
         require(msg.sender == ICO_token);
-        return this.tokenReceived.selector;
-        //return 0x8943ec02;
+        return this.tokenReceived.selector; //return 0x8943ec02;
     }
 
     function purchaseTokens(address _payment_token, uint256 _payment_amount) public
     {
-        if (_payment_token == BUSDT_contract)
-        {
-            IERC20(_payment_token).transferFrom(msg.sender, address(this), _payment_amount);
-            IERC20(ICO_token).transfer(msg.sender, _payment_amount * price_rate_BUSDT);
-        }
+        require(_payment_token == USDT_contract || _payment_token == USDC_contract || _payment_token == DAI_contract, "Wrong token");
+        IERC20(_payment_token).transferFrom(msg.sender, address(this), _payment_amount);
+        IERC20(ICO_token).transfer(msg.sender, _payment_amount * price_rate_USD);
     }
 
-    function getRewardAmount(address _token, uint256 _deposit) public view returns (uint256)
+    function getRewardAmount(address _payment_token, uint256 _deposit) public view returns (uint256)
     {
-        if(_token == BUSDT_contract) return _deposit * price_rate_BUSDT;
-        if(_token == address(0))     return _deposit * price_rate_BUSDT * price_rate_ETH;
+        if(_payment_token == USDT_contract || _payment_token == USDC_contract || _payment_token == DAI_contract) return _deposit * price_rate_USD;
+        if(_payment_token == address(0))     return _deposit * price_rate_USD * price_rate_ETH;
         return 0;
     }
 
-    function set(uint256 _price_USDT, uint256 _price_rate_ETH, address _ICO_token, address _BUSDT) public
+    function set(uint256 _price_USD, uint256 _price_rate_ETH, address _ICO_token, address _USDT, address _USDC, address _DAI) public
     {
         require(msg.sender == owner);
-        price_rate_BUSDT   = _price_USDT;
-        BUSDT_contract     = _BUSDT;
+        price_rate_USD     = _price_USD;
+        USDT_contract      = _USDT;
+        USDC_contract      = _USDC;
+        DAI_contract       = _DAI;
         ICO_token          = _ICO_token;
+        price_rate_ETH     = _price_rate_ETH;
+    }
+
+    function updateETH(uint256 _price_rate_ETH) external 
+    {
+        require(msg.sender == owner);
         price_rate_ETH     = _price_rate_ETH;
     }
 
