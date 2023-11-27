@@ -78,6 +78,7 @@ contract D223Token {
         _symbol   = "D223";
         _decimals = 18;
         balances[msg.sender] = 8000000000 * 1e18;
+        emit Transfer(address(0), msg.sender, balances[msg.sender], hex"000000");
         _totalSupply = balances[msg.sender];
     }
 
@@ -235,7 +236,7 @@ contract D223ICO {
     address public USDT_contract  = 0xdAC17F958D2ee523a2206206994597C13D831ec7;
     address public USDC_contract  = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
     address public DAI_contract   = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
-    address public ICO_token      = 0xf5717D6c1cbAFE00A4c800B227eCe496180244F9;
+    address public ICO_token      = <TODO>;
 
     receive() external payable
     {
@@ -251,6 +252,10 @@ contract D223ICO {
     function purchaseTokens(address _payment_token, uint256 _payment_amount) public
     {
         require(_payment_token == USDT_contract || _payment_token == USDC_contract || _payment_token == DAI_contract, "Wrong token");
+        if(_payment_token == USDT_contract || _payment_token == USDC_contract)
+        {
+            _payment_amount = _payment_amount * 1e12; // USDT and USDC have 6 decimals.
+        }
         safeTransferFrom(_payment_token, msg.sender, address(this), _payment_amount);
         IERC20(ICO_token).transfer(msg.sender, _payment_amount * price_rate_USD);
     }
@@ -288,6 +293,12 @@ contract D223ICO {
     function safeTransferFrom(address token, address from, address to, uint value) internal {
         // bytes4(keccak256(bytes('transferFrom(address,address,uint256)')));
         (bool success, bytes memory data) = token.call(abi.encodeWithSelector(0x23b872dd, from, to, value));
+        require(success && (data.length == 0 || abi.decode(data, (bool))), "Transfer failed");
+    }
+    
+    function safeTransfer(address token, address from, address to, uint value) internal {
+        // bytes4(keccak256(bytes('transferFrom(address,address,uint256)')));
+        (bool success, bytes memory data) = token.call(abi.encodeWithSelector(0xa9059cbb, to, value));
         require(success && (data.length == 0 || abi.decode(data, (bool))), "Transfer failed");
     }
 }
