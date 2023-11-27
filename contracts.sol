@@ -236,7 +236,7 @@ contract D223ICO {
     address public USDT_contract  = 0xdAC17F958D2ee523a2206206994597C13D831ec7;
     address public USDC_contract  = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
     address public DAI_contract   = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
-    address public ICO_token      = <TODO>;
+    address public ICO_token      =  ---- ;
 
     receive() external payable
     {
@@ -287,7 +287,8 @@ contract D223ICO {
     function extractTokens(address _token, uint256 _amount) public
     {
         require(msg.sender == owner);
-        IERC20(_token).transfer(msg.sender, _amount);
+        //IERC20(_token).transfer(msg.sender, _amount);
+        safeTransfer(_token, msg.sender, _amount);
     }
     
     function safeTransferFrom(address token, address from, address to, uint value) internal {
@@ -296,8 +297,7 @@ contract D223ICO {
         require(success && (data.length == 0 || abi.decode(data, (bool))), "Transfer failed");
     }
     
-    function safeTransfer(address token, address from, address to, uint value) internal {
-        // bytes4(keccak256(bytes('transferFrom(address,address,uint256)')));
+    function safeTransfer(address token, address to, uint value) internal {
         (bool success, bytes memory data) = token.call(abi.encodeWithSelector(0xa9059cbb, to, value));
         require(success && (data.length == 0 || abi.decode(data, (bool))), "Transfer failed");
     }
