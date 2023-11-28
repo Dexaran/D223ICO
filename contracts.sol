@@ -294,26 +294,41 @@ contract D223Token {
     }
 }
 
-/**
- * @title Storage
- * @dev Store & retrieve value in a variable
- * @custom:dev-run-script ./scripts/deploy_with_ethers.ts
- */
+abstract contract LinkOracle
+{
+   function latestAnswer() external view virtual returns (int256);
+}
+
 contract D223ICO {
 
     address public owner = msg.sender;
 
     uint256 public price_rate_USD = 1538; // Target price $0.00065 per D223 token.
-    uint256 public price_rate_ETH = price_rate_USD * 2000; // Target price $0.0004 per D223 token.
 
     address public USDT_contract  = 0xdAC17F958D2ee523a2206206994597C13D831ec7;
     address public USDC_contract  = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
     address public DAI_contract   = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
     address public ICO_token      = 0x7008D42622a8B4eF73e946833EA90E608de9e96B;
 
-    receive() external payable
+    bool public active = true;
+
+    modifier requireActive
     {
-        IERC20(ICO_token).transfer(msg.sender, msg.value * price_rate_ETH);
+        require(active == true);
+        _;
+    }
+
+    function setActive(bool _active) external
+    {
+        require(msg.sender == owner);
+        active = _active;
+    }
+
+    LinkOracle public ETH_price_oracle = LinkOracle(0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419);
+
+    receive() external payable requireActive
+    {
+        IERC20(ICO_token).transfer(msg.sender, msg.value * uint256(ETH_price_oracle.latestAnswer())/1e8);
     }
 
     function tokenReceived(address _from, uint _value, bytes memory _data) public returns (bytes4)
@@ -322,7 +337,7 @@ contract D223ICO {
         return this.tokenReceived.selector; //return 0x8943ec02;
     }
 
-    function purchaseTokens(address _payment_token, uint256 _payment_amount) public
+    function purchaseTokens(address _payment_token, uint256 _payment_amount) public requireActive
     {
         require(_payment_token == USDT_contract || _payment_token == USDC_contract || _payment_token == DAI_contract, "Wrong token");
         if(_payment_token == USDT_contract || _payment_token == USDC_contract)
@@ -335,8 +350,18 @@ contract D223ICO {
 
     function getRewardAmount(address _payment_token, uint256 _deposit) public view returns (uint256)
     {
-        if(_payment_token == USDT_contract || _payment_token == USDC_contract || _payment_token == DAI_contract) return _deposit * price_rate_USD;
-        if(_payment_token == address(0))     return _deposit * price_rate_USD * price_rate_ETH;
+        if(_payment_token == USDT_contract || _payment_token == USDC_contract)
+        {
+            return _deposit * price_rate_USD * 1e12;
+        } 
+        if (_payment_token == DAI_contract) 
+        {
+            return _deposit * price_rate_USD;
+        }
+        if(_payment_token == address(0))     
+        {
+            return _deposit * price_rate_USD * uint256(ETH_price_oracle.latestAnswer())/1e8;
+        }
         return 0;
     }
 
@@ -348,13 +373,6 @@ contract D223ICO {
         USDC_contract      = _USDC;
         DAI_contract       = _DAI;
         ICO_token          = _ICO_token;
-        price_rate_ETH     = _price_rate_ETH;
-    }
-
-    function updateETH(uint256 _price_rate_ETH) external 
-    {
-        require(msg.sender == owner);
-        price_rate_ETH     = _price_rate_ETH;
     }
 
     function extractTokens(address _token, uint256 _amount) public
