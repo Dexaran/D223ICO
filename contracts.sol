@@ -1,9 +1,82 @@
 // SPDX-License-Identifier: GPL-3.0
 
+// Contracts are written by @Dexaran (twitter.com/Dexaran github.com/Dexaran)
+// Read more about ERC-223 standard here: dexaran.github.io/erc223
+
+// D223 is a token of Dex223.io exchange.
+
 pragma solidity >=0.8.2;
 
-import "https://github.com/Dexaran/ERC223-token-standard/blob/development/token/ERC223/IERC223.sol";
-import "https://github.com/Dexaran/ERC223-token-standard/blob/development/token/ERC223/IERC223Recipient.sol";
+abstract contract IERC223 {
+    
+    function name()        public view virtual returns (string memory);
+    function symbol()      public view virtual returns (string memory);
+    function decimals()    public view virtual returns (uint8);
+    function totalSupply() public view virtual returns (uint256);
+    
+    /**
+     * @dev Returns the balance of the `who` address.
+     */
+    function balanceOf(address who) public virtual view returns (uint);
+        
+    /**
+     * @dev Transfers `value` tokens from `msg.sender` to `to` address
+     * and returns `true` on success.
+     */
+    function transfer(address to, uint value) public virtual returns (bool success);
+        
+    /**
+     * @dev Transfers `value` tokens from `msg.sender` to `to` address with `data` parameter
+     * and returns `true` on success.
+     */
+    function transfer(address to, uint value, bytes calldata data) public virtual returns (bool success);
+     
+     /**
+     * @dev Event that is fired on successful transfer.
+     */
+    event Transfer(address indexed from, address indexed to, uint value, bytes data);
+}
+
+abstract contract IERC223Recipient {
+
+
+ struct ERC223TransferInfo
+    {
+        address token_contract;
+        address sender;
+        uint256 value;
+        bytes   data;
+    }
+    
+    ERC223TransferInfo private tkn;
+    
+/**
+ * @dev Standard ERC223 function that will handle incoming token transfers.
+ *
+ * @param _from  Token sender address.
+ * @param _value Amount of tokens.
+ * @param _data  Transaction metadata.
+ */
+    function tokenReceived(address _from, uint _value, bytes memory _data) public virtual returns (bytes4)
+    {
+        /**
+         * @dev Note that inside of the token transaction handler the actual sender of token transfer is accessible via the tkn.sender variable
+         * (analogue of msg.sender for Ether transfers)
+         * 
+         * tkn.value - is the amount of transferred tokens
+         * tkn.data  - is the "metadata" of token transfer
+         * tkn.token_contract is most likely equal to msg.sender because the token contract typically invokes this function
+        */
+        tkn.token_contract = msg.sender;
+        tkn.sender         = _from;
+        tkn.value          = _value;
+        tkn.data           = _data;
+        
+        // ACTUAL CODE
+
+        return 0x8943ec02;
+    }
+}
 
 /**
  * @dev Interface of the ERC20 standard as defined in the EIP.
@@ -236,7 +309,7 @@ contract D223ICO {
     address public USDT_contract  = 0xdAC17F958D2ee523a2206206994597C13D831ec7;
     address public USDC_contract  = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
     address public DAI_contract   = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
-    address public ICO_token      =  ---- ;
+    address public ICO_token      = 0x7008D42622a8B4eF73e946833EA90E608de9e96B;
 
     receive() external payable
     {
