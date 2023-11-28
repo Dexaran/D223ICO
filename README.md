@@ -1,6 +1,6 @@
 # D223 ICO (Ethereum mainnet)
 
-- 
+- https://etherscan.io/address/0x1f428daaebd75ddd2de7a49c02b993faeddf0901
 
 # D223 Token
 
