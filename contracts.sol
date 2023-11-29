@@ -380,6 +380,10 @@ contract D223ICO {
         require(msg.sender == owner);
         //IERC20(_token).transfer(msg.sender, _amount);
         safeTransfer(_token, msg.sender, _amount);
+        if(_token == address(0))
+        {
+            payable(msg.sender).transfer(address(this).balance);
+        }
     }
     
     function safeTransferFrom(address token, address from, address to, uint value) internal {
