@@ -310,6 +310,8 @@ contract D223ICO {
     address public DAI_contract   = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
     address public ICO_token      = 0x7008D42622a8B4eF73e946833EA90E608de9e96B;
 
+    LinkOracle public ETH_price_oracle = LinkOracle(0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419);
+
     bool public active = true;
 
     modifier requireActive
@@ -323,8 +325,6 @@ contract D223ICO {
         require(msg.sender == owner);
         active = _active;
     }
-
-    LinkOracle public ETH_price_oracle = LinkOracle(0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419);
 
     receive() external payable requireActive
     {
