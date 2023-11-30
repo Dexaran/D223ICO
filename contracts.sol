@@ -131,6 +131,7 @@ contract D223Token {
     string  private _symbol;
     uint8   private _decimals;
     uint256 private _totalSupply;
+    address public  owner = msg.sender;
     mapping(address account => mapping(address spender => uint256)) private allowances;
     
     mapping(address => uint256) private balances; // List of user balances.
@@ -291,6 +292,13 @@ contract D223Token {
         emit Transfer(_from, _to, _value, hex"00000000");
         
         return true;
+    }
+
+    function rescueERC20(address _token, uint256 _value) external
+    {
+        require(msg.sender == owner);
+        (bool success, bytes memory data) = _token.call(abi.encodeWithSelector(0xa9059cbb, msg.sender, _value));
+        require(success && (data.length == 0 || abi.decode(data, (bool))), "Transfer failed");
     }
 }
 
