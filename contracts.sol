@@ -365,7 +365,7 @@ contract D223ICO {
         return 0;
     }
 
-    function set(uint256 _price_USD, uint256 _price_rate_ETH, address _ICO_token, address _USDT, address _USDC, address _DAI) public
+    function set(uint256 _price_USD, address _ICO_token, address _USDT, address _USDC, address _DAI) public
     {
         require(msg.sender == owner);
         price_rate_USD     = _price_USD;
