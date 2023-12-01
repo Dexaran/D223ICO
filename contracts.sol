@@ -354,11 +354,11 @@ contract D223ICO {
     function purchaseTokens(address _payment_token, uint256 _payment_amount) public requireActive
     {
         require(_payment_token == USDT_contract || _payment_token == USDC_contract || _payment_token == DAI_contract, "Wrong token");
+        safeTransferFrom(_payment_token, msg.sender, address(this), _payment_amount);
         if(_payment_token == USDT_contract || _payment_token == USDC_contract)
         {
             _payment_amount = _payment_amount * 1e12; // USDT and USDC have 6 decimals.
         }
-        safeTransferFrom(_payment_token, msg.sender, address(this), _payment_amount);
         IERC20(ICO_token).transfer(msg.sender, _payment_amount * price_rate_USD);
     }
 
