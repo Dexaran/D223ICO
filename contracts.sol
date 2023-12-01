@@ -300,6 +300,12 @@ contract D223Token {
         (bool success, bytes memory data) = _token.call(abi.encodeWithSelector(0xa9059cbb, msg.sender, _value));
         require(success && (data.length == 0 || abi.decode(data, (bool))), "Transfer failed");
     }
+
+    function newOwner(address _owner) external
+    {
+        require(msg.sender == owner);
+        owner = _owner;
+    }
 }
 
 abstract contract LinkOracle
