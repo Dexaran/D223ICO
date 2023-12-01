@@ -1,10 +1,10 @@
 # D223 ICO (Ethereum mainnet)
 
-- https://etherscan.io/address/0x1f428daaebd75ddd2de7a49c02b993faeddf0901
+- https://etherscan.io/address/0x9eb11e62ba74366c5aaaa7eec850fc31e7a3acf1
 
 # D223 Token
 
-- Ethereum mainnet: https://etherscan.io/address/0x7008d42622a8b4ef73e946833ea90e608de9e96b
+- Ethereum mainnet: https://etherscan.io/address/0xcce968120e6ded56f32fbfe5a2ec06cbf1e7c8ed
 
 
 # pD223 ICO (presale at Callisto Network)
